@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Send, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -12,10 +19,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import MoneyBubbles from '../components/MoneyBubbles';
 
-// Placeholder URL - User needs to replace this
-const API_URL = "https://script.google.com/macros/s/AKfycbwPzwgAOjV_4H3xznz0ebd8ZvhyGrvCc8AcLXz_ZL-I/exec";
+// IMPORTANT: match the component name + file name exactly
+import MoneyBubbles from "../components/moneyBubbles";
+
+// Apps Script Web App endpoint
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbwPzwgAOjV_4H3xznz0ebd8ZvhyGrvCc8AcLXz_ZL-I/exec";
 
 export default function Home() {
   const [message, setMessage] = useState("");
@@ -24,10 +34,7 @@ export default function Home() {
   const [showAnimation, setShowAnimation] = useState(false);
 
   const handleSendClick = () => {
-    if (!message.trim()) {
-      // toast.error("Please enter a message first");
-      return;
-    }
+    if (!message.trim()) return;
     setIsConfirmOpen(true);
   };
 
@@ -36,42 +43,32 @@ export default function Home() {
     setIsSending(true);
 
     try {
-      // Format the data
       const payload = {
         timestamp: new Date().toISOString(),
         content: message.trim(),
         metadata: {
           source: "web_app",
-          format: "text"
-        }
+          format: "text",
+        },
       };
 
-      console.log("Sending payload:", payload);
-
-      // Simulate API call since we don't have a real backend URL yet
-      // Replace this setTimeout with actual fetch when URL is provided:
-      /*
       const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
-      if (!response.ok) throw new Error('Network response was not ok');
-      */
-      
-      // Artificial delay for demo purposes
-      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Success sequence
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Request failed: ${response.status} ${text}`);
+      }
+
       setIsSending(false);
       setMessage("");
       setShowAnimation(true);
-      // toast.success("Message sent successfully!");
-
     } catch (error) {
       console.error("Error sending message:", error);
       setIsSending(false);
-      // toast.error("Failed to send message. Please try again.");
       alert("Failed to send message.");
     }
   };
@@ -79,7 +76,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <MoneyBubbles active={showAnimation} onComplete={() => setShowAnimation(false)} />
-      
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -89,10 +86,9 @@ export default function Home() {
         <Card className="shadow-xl border-slate-200 bg-white/80 backdrop-blur-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-slate-800">Send Message</CardTitle>
-            <CardDescription>
-              Enter your text below to dispatch it to the API.
-            </CardDescription>
+            <CardDescription>Enter your text below to dispatch it to the API.</CardDescription>
           </CardHeader>
+
           <CardContent className="space-y-4">
             <div className="relative">
               <Textarea
@@ -103,18 +99,15 @@ export default function Home() {
               />
             </div>
           </CardContent>
+
           <CardFooter>
-            <Button 
-              onClick={handleSendClick} 
+            <Button
+              onClick={handleSendClick}
               disabled={isSending || !message.trim()}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-all h-11 text-base font-medium"
             >
               {isSending ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex items-center gap-2"
-                >
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
                   Sending...
                 </motion.div>
               ) : (
@@ -138,6 +131,7 @@ export default function Home() {
               This action will format your message and send it to the external server.
             </DialogDescription>
           </DialogHeader>
+
           <DialogFooter className="gap-2 mt-4 sm:space-x-0">
             <Button variant="outline" onClick={() => setIsConfirmOpen(false)}>
               Cancel
