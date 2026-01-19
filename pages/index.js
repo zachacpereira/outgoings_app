@@ -1,29 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
-// IMPORTANT: match the component name + file name exactly
-import MoneyBubbles from "../components/moneyBubbles";
+// ✅ Fix: your file is components/MoneyBubbles.js (case-sensitive on Vercel)
+import MoneyBubbles from "../components/MoneyBubbles";
 
-// Apps Script Web App endpoint
 const API_URL =
   "https://script.google.com/macros/s/AKfycbwPzwgAOjV_4H3xznz0ebd8ZvhyGrvCc8AcLXz_ZL-I/exec";
 
@@ -46,10 +27,7 @@ export default function Home() {
       const payload = {
         timestamp: new Date().toISOString(),
         content: message.trim(),
-        metadata: {
-          source: "web_app",
-          format: "text",
-        },
+        metadata: { source: "web_app", format: "text" },
       };
 
       const response = await fetch(API_URL, {
@@ -83,65 +61,70 @@ export default function Home() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-lg"
       >
-        <Card className="shadow-xl border-slate-200 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-slate-800">Send Message</CardTitle>
-            <CardDescription>Enter your text below to dispatch it to the API.</CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            <div className="relative">
-              <Textarea
-                placeholder="Type your message here..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="min-h-[150px] resize-none text-base p-4 focus-visible:ring-indigo-500"
-              />
+        <div className="shadow-xl border border-slate-200 bg-white/80 backdrop-blur-sm rounded-xl">
+          <div className="p-6 space-y-1">
+            <div className="text-2xl font-bold text-slate-800">Send Message</div>
+            <div className="text-slate-600">
+              Enter your text below to dispatch it to the API.
             </div>
-          </CardContent>
+          </div>
 
-          <CardFooter>
-            <Button
+          <div className="px-6 pb-6 space-y-4">
+            <textarea
+              placeholder="Type your message here..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full min-h-[150px] resize-none text-base p-4 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+
+            <button
               onClick={handleSendClick}
               disabled={isSending || !message.trim()}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-all h-11 text-base font-medium"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white transition-all h-11 text-base font-medium rounded-md flex items-center justify-center gap-2"
             >
               {isSending ? (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
                   Sending...
                 </motion.div>
               ) : (
-                <div className="flex items-center gap-2">
+                <>
                   <Send className="w-4 h-4" /> Send Message
-                </div>
+                </>
               )}
-            </Button>
-          </CardFooter>
-        </Card>
+            </button>
+          </div>
+        </div>
       </motion.div>
 
-      <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <AlertCircle className="w-5 h-5 text-indigo-600" />
-              Are you sure?
-            </DialogTitle>
-            <DialogDescription className="pt-2 text-base">
-              This action will format your message and send it to the external server.
-            </DialogDescription>
-          </DialogHeader>
-
-          <DialogFooter className="gap-2 mt-4 sm:space-x-0">
-            <Button variant="outline" onClick={() => setIsConfirmOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleConfirm} className="bg-indigo-600 hover:bg-indigo-700">
-              Yes, send it
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {isConfirmOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-xl border border-slate-200">
+            <div className="p-6">
+              <div className="flex items-center gap-2 text-xl font-semibold">
+                <AlertCircle className="w-5 h-5 text-indigo-600" />
+                Are you sure?
+              </div>
+              <div className="pt-2 text-base text-slate-600">
+                This action will format your message and send it to the external server.
+              </div>
+            </div>
+            <div className="px-6 pb-6 flex gap-2 justify-end">
+              <button
+                onClick={() => setIsConfirmOpen(false)}
+                className="h-10 px-4 rounded-md border border-slate-200 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirm}
+                className="h-10 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white"
+              >
+                Yes, send it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
