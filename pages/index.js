@@ -32,15 +32,13 @@ export default function Home() {
 
       const response = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(payload),
+        redirect: "follow"
       });
 
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`Request failed: ${response.status} ${text}`);
-      }
-
+      // With no-cors, we can't read the response, so just assume success
       setIsSending(false);
       setMessage("");
       setShowAnimation(true);
